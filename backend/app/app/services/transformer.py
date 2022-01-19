@@ -67,7 +67,7 @@ class NumberToEnglishTransformer:
         Returns:
             number_in_english (str): The cleaned number in english
         """
-        if 'zero  ' in number_in_english:
+        if 'zero  ' in number_in_english and number_in_english != 'zero  ':
             number_in_english = number_in_english.replace('zero  ','')
         return number_in_english
 
