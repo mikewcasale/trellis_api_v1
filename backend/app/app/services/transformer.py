@@ -41,6 +41,7 @@ class NumberToEnglishTransformer:
 
         Args:
             number (int): The number to be converted into english
+            iter_split (int): The current iteration while looping through the number-split-on-commas (e.g. ["100","000","000"] iterating from 0-2 because length==3)
         """
         combined_number = ''
         for n in number.split(',')[iter_split:]:
