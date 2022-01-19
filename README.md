@@ -75,11 +75,10 @@ class NumberToEnglishTransformer:
         Returns:
             number_in_english (str): The transformed number in english
         """
-        payload=int(payload.number)
         number_in_english = ''
-
-        if payload is None or type(payload) is not int:
-            raise ValueError(payload)
+        
+        try: payload=int(payload.number)
+        except: raise ValueError(payload)
 
         formatted_number = NumberToEnglishTransformer.preprocess_number(payload)
         for iter_split in range(len(formatted_number.split(','))):
