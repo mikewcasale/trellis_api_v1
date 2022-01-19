@@ -59,6 +59,19 @@ class NumberToEnglishTransformer:
         return NumberToEnglishTransformer.preprocess_number(int(NumberToEnglishTransformer.combine_remaining(number, iter_split)))
 
     @staticmethod
+    def cleanup_response(number_in_english:str) -> str:
+        """Cleans up response
+
+        Args:
+            number_in_english (str): The API response
+        Returns:
+            number_in_english (str): The cleaned number in english
+        """
+        if 'zero  ' in number_in_english:
+            number_in_english = number_in_english.replace('zero  ','')
+        return number_in_english
+
+    @staticmethod
     def transform(payload:int) -> str:
         """Main transformation logic
 
@@ -77,4 +90,4 @@ class NumberToEnglishTransformer:
         formatted_number = NumberToEnglishTransformer.preprocess_number(payload)
         for iter_split in range(len(formatted_number.split(','))):
             number_in_english += NumberToEnglishTransformer.transform_largest_units(NumberToEnglishTransformer.preprocess_remaining(formatted_number, iter_split)) + ' '
-        return number_in_english
+        return NumberToEnglishTransformer.cleanup_response(number_in_english)
