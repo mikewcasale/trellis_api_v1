@@ -68,11 +68,12 @@ class NumberToEnglishTransformer:
 
     @staticmethod
     def transform(payload:int) -> str:
-        """Preprocesses the remaining units in the number-split-on-commas into a standard comma formatted string (e.g. "1,234,567" --> "234,567")
+        """Main transformation logic
 
         Args:
             payload (int): The number to be converted into english
-            iter_split (int): The current iteration while looping through the number-split-on-commas (e.g. ["100","000","000"] iterating from 0-2 because length==3)
+        Returns:
+            number_in_english (str): The transformed number in english
         """
         payload=int(payload.number)
         number_in_english = ''
