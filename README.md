@@ -36,7 +36,7 @@ class NumberToEnglishTransformer(object):
         return number_in_english
     
     def combine_remaining(self, formatted_number:str, comma_split_ct:int) -> str:
-        """Combines the remaining number-split-on-commas (e.g. combines "000" and "000" in ex. "100,000,000" --> ["100","000","000"])
+        """Combines the remaining number splits (e.g. ["456", "789"] --> "456,789")
 
         Args:
             formatted_number: The number to be converted into english
@@ -48,7 +48,7 @@ class NumberToEnglishTransformer(object):
         return combined_number
     
     def reformat_remaining_with_commas(self, formatted_number:str, comma_split_ct:int) -> str:
-        """Preprocesses the remaining units in the number-split-on-commas into a standard comma formatted string (e.g. "1,234,567" --> "234,567")
+        """Reformats remaining number in a standard comma formatted string (e.g. "1,234,567" --> "234,567")
 
         Args:
             formatted_number (int): The number to be converted into english
@@ -73,12 +73,11 @@ class NumberToEnglishTransformer(object):
         return mapped_english_units
 
     def map_english_number(self, formatted_number_remaining:str) -> str:
-        """Maps the English number to the left of the leftmost comma
-            (e.g. hundreds, thousands, millions, billions, etc...)
+        """Maps the English number to the left of the leftmost comma for any number in range (1, 999) found in the number map
         Args:
             formatted_number_remaining: The number formatted as str with commas
         Returns:
-            mapped_english_units: English units of the number to the left of the leftmost comma in formatted_number_remaining
+            mapped_english_number: English number (w/ units) to the left of the leftmost comma in formatted_number_remaining
         """
         mapped_english_units = self.map_english_units(formatted_number_remaining)
         mapped_english_number = number_map[formatted_number_remaining.split(',')[0]]
