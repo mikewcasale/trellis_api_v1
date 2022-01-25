@@ -94,7 +94,10 @@ class NumberToEnglishTransformer(object):
         try:
             payload = int(payload.number)
         except:
-            raise ValueError(payload)
+            try:
+                payload = int(payload['number'])
+            except:
+                raise ValueError(payload)
 
         formatted_number = self.reformat_with_commas(payload)
         comma_iterations = range(len(formatted_number.split(',')))
