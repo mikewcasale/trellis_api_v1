@@ -1,7 +1,14 @@
 from app.db.number_map import number_map, number_units
 
 class NumberToEnglishTransformer(object):
-    """Transforms a number to its written english equivalent
+    """Transforms a number to its written english equivalent following the process
+        1. Reformat integer number as a comma-formatted string, (e.g. 123456 --> "123,456")
+        2. Split the string found in step 1 on each comma to create a list of strings (e.g. "123,456" --> ["123","456"])
+        3. Iterate through the list found in step 2, on each iteration:
+            3a. Map the leftmost number (e.g. ["123","456"] --> "one hundred twenty three")
+            3b. Map the leftmost number's units (e.g. ["123","456"] --> "thousand")
+            3c. Combine & return outputs from 3a and 3b (e.g. "one hundred twenty three thousand")
+        4. Combine the iterative outputs of step 3 (e.g. "one hundred twenty three thousand" + "four hundred fifty six")
     """
 
     def __init__(self):
@@ -19,26 +26,27 @@ class NumberToEnglishTransformer(object):
             number_in_english = number_in_english.replace('zero  ', '')
         return number_in_english
     
-    def combine_remaining(self, number:str, iter_split:int) -> str:
-        """Combines the remaining units in the number-split-on-commas (e.g. combines "000" and "000" in ex. "100,000,000" --> ["100","000","000"])
+    def combine_remaining(self, formatted_number:str, comma_split_ct:int) -> str:
+        """Combines the remaining number-split-on-commas (e.g. combines "000" and "000" in ex. "100,000,000" --> ["100","000","000"])
 
         Args:
-            number: The number to be converted into english
-            iter_split: The current iteration while looping through the number-split-on-commas (e.g. ["100","000","000"] iterating from 0-2 because length==3)
+            formatted_number: The number to be converted into english
+            comma_split_ct: The current comma_split_ct
         """
         combined_number = ''
-        for n in number.split(',')[iter_split:]:
+        for n in formatted_number.split(',')[comma_split_ct:]:
             combined_number += n
         return combined_number
     
-    def preprocess_remaining(self, number:str, iter_split:int) -> str:
+    def reformat_remaining_with_commas(self, formatted_number:str, comma_split_ct:int) -> str:
         """Preprocesses the remaining units in the number-split-on-commas into a standard comma formatted string (e.g. "1,234,567" --> "234,567")
 
         Args:
-            number (int): The number to be converted into english
-            iter_split (int): The current iteration while looping through the number-split-on-commas (e.g. ["100","000","000"] iterating from 0-2 because length==3)
+            formatted_number (int): The number to be converted into english
+            comma_split_ct (int): The current iteration while looping through the number-split-on-commas (e.g. ["100","000","000"] iterating from 0-2 because length==3)
         """
-        return self.preprocess_number(int(self.combine_remaining(number, iter_split)))
+        number_remaining = int(self.combine_remaining(formatted_number, comma_split_ct))
+        return self.reformat_with_commas(number_remaining)
 
     def map_english_units(self, formatted_number_remaining:str) -> str:
         """Maps the English units of the number to the left of the leftmost comma
@@ -68,7 +76,7 @@ class NumberToEnglishTransformer(object):
         mapped_english_number = mapped_english_number + ' ' + mapped_english_units
         return mapped_english_number
 
-    def preprocess_number(self, number:int) -> str:
+    def reformat_with_commas(self, number:int) -> str:
         """Preprocesses the number into a standard comma formatted string (e.g. 1000 --> "1,000")
         """
         return '{:,}'.format(number)
@@ -88,8 +96,9 @@ class NumberToEnglishTransformer(object):
         except:
             raise ValueError(payload)
 
-        formatted_number = self.preprocess_number(payload)
-        for iter_split in range(len(formatted_number.split(','))):
-            formatted_number_remaining = self.preprocess_remaining(formatted_number, iter_split)
+        formatted_number = self.reformat_with_commas(payload)
+        comma_iterations = range(len(formatted_number.split(',')))
+        for comma_split_ct in comma_iterations:
+            formatted_number_remaining = self.reformat_remaining_with_commas(formatted_number, comma_split_ct)
             number_in_english += self.map_english_number(formatted_number_remaining) + ' '
         return self.cleanup_response(number_in_english)
